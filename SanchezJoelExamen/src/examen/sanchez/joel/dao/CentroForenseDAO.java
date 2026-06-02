@@ -11,7 +11,5 @@ public abstract class CentroForenseDAO extends AbstractDAO<CentroForense> {
         super(motorSQL);
     }
 
-    // Métodos específicos de satélite
-    public abstract ArrayList<CentroForense> findByPais(String idAgencia);
-    public abstract ArrayList<CentroForense> findByNivelSeguridad();
+    public abstract ArrayList<CentroForense> findByPais(String idCentro);
 }

@@ -7,11 +7,14 @@ public class CentroForense {
     private int nivelSeguridad;
     private String sanchezjoel;
 
-    public CentroForense(String nombre, String pais, int nivelSeguridad, String sanchezjoel) {
+    public CentroForense(String nombre, String Pais, int nivelSeguridad, String sanchezjoel) {
         this.nombre = nombre;
         this.pais = pais;
         this.nivelSeguridad = nivelSeguridad;
         this.sanchezjoel = sanchezjoel;
+    }
+
+    public CentroForense() {
     }
 
     public String getIdCentro() {

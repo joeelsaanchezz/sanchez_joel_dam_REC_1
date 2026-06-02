@@ -7,7 +7,7 @@ public class InformeForense {
     private String conclusion;
     private String sanchezjoel;
 
-    public InformeForense(String ADNPositivo, int nivelRiesgo, String conclusion, String sanchezjoel) {
+    public InformeForense() {
         this.ADNPositivo = ADNPositivo;
         this.nivelRiesgo = nivelRiesgo;
         this.conclusion = conclusion;

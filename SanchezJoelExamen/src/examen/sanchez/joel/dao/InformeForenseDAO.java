@@ -6,13 +6,16 @@ import examen.sanchez.joel.motores.MotorSQL;
 
 import java.util.ArrayList;
 
-public abstract class InformeForenseDAO extends AbstractDAO<CentroForense> {
+public abstract class InformeForenseDAO extends AbstractDAO<InformeForense> {
 
     public InformeForenseDAO(MotorSQL motorSQL) {
         super(motorSQL);
     }
 
-    public abstract ArrayList<InformeForense> findByNicelRiesgo(String idInforme);
+    public abstract ArrayList<InformeForense> findByNivelRiesgo(String idInforme);
 
     public abstract void add(InformeForense i);
+
+    // ===================== FIND BY ID =====================
+    public abstract InformeForense find(int id);
 }

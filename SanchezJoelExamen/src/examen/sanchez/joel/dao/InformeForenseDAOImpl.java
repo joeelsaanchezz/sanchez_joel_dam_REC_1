@@ -1,138 +1,155 @@
 package examen.sanchez.joel.dao;
 
+import examen.sanchez.joel.beans.CentroForense;
 import examen.sanchez.joel.beans.InformeForense;
+import examen.sanchez.joel.dao.InformeForenseDAO;
 import examen.sanchez.joel.motores.MotorSQL;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
-public class InformeForenseDAOImpl {
+public class InformeForenseDAOImpl extends InformeForenseDAO {
 
+    public InformeForenseDAOImpl(MotorSQL motorSQL) {
+        super(motorSQL);
+    }
 
-    public class InformeForenseDAOImpl extends InformeForenseDAO {
-
-        public InformeForenseDAOImpl(MotorSQL motorSQL) {
-            super(motorSQL);
+    @Override
+    public ArrayList<InformeForense> findByNivelRiesgo(String nivelRiesgo) {
+        motorSQL.connect();
+        ArrayList<InformeForense> lista = new ArrayList<>();
+        InformeForense i = null;
+        motorSQL.prepare("SELECT * FROM INFORMES_FORENSES WHERE NIVEL_RIESGO = ?");
+        try {
+            motorSQL.getPs().setString(1, nivelRiesgo);
+            ResultSet rs = motorSQL.executeQuery();
+            if (rs.next()) {
+                i = new InformeForense();
+                i.setIdInforme(rs.getString("ID"));
+                i.setADNPositivo(rs.getString("ADN_POSITIVO"));
+                i.setNivelRiesgo(rs.getInt("NIVEL_RIESGO"));
+                i.setConclusion(rs.getString("CONCLUSION"));
+                i.setSanchezjoel(rs.getString("SANCHEZJOEL"));
+                lista.add(i);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
         }
+        return lista;
+    }
 
-        @Override
-        public void add(InformeForense i) {
-            MotorSQL.connect();
-            try {
-                PreparedStatement ps = MotorSQL.connect().prepareStatement(
-                        "INSERT INTO AGENCIAS VALUES (?, ?, ?, ?)");
-                ps.setString(1, i.getIdInforme());
-                ps.setString(2, i.getADNPositivo());
-                ps.setInt(3, i.getNivelRiesgo());
-                ps.setString(4, i.getConclusion());
-                ps.setString(5, i.getSanchezjoel());
-                ps.executeUpdate();
-                System.out.println("Agencia añadida: " + i.getIdInforme());
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-        }
 
-        @Override
-        public InformeForense find(String id) {
-            motorSQL.connect();
-            InformeForense informe = null;
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "SELECT * FROM AGENCIAS WHERE ID_AGENCIA = ?");
-                ps.setString(1, id);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    agencia = new Agencia(rs.getString("ID_AGENCIA"),
-                            rs.getString("NOMBRE"), rs.getString("PAIS"),
-                            rs.getInt("FECHA_FUND"));
-                }
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-            return agencia;
-        }
-
-        @Override
-        public ArrayList<Agencia> findAll() {
-            motorSQL.connect();
-            ArrayList<Agencia> lista = new ArrayList<>();
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "SELECT * FROM AGENCIAS");
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    lista.add(new Agencia(rs.getString("ID_AGENCIA"),
-                            rs.getString("NOMBRE"), rs.getString("PAIS"),
-                            rs.getInt("FECHA_FUND")));
-                }
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-            return lista;
-        }
-
-        @Override
-        public void update(String id, Agencia a) {
-            motorSQL.connect();
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "UPDATE AGENCIAS SET NOMBRE=?, PAIS=?, FECHA_FUND=? WHERE ID_AGENCIA=?");
-                ps.setString(1, a.getNombre());
-                ps.setString(2, a.getPais());
-                ps.setInt(3, a.getFechaFundacion());
-                ps.setString(4, id);
-                ps.executeUpdate();
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-        }
-
-        @Override
-        public void delete(String id) {
-            motorSQL.connect();
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "DELETE FROM AGENCIAS WHERE ID_AGENCIA = ?");
-                ps.setString(1, id);
-                ps.executeUpdate();
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-        }
-
-        @Override
-        public ArrayList<Agencia> findByPais(String pais) {
-            motorSQL.connect();
-            ArrayList<Agencia> lista = new ArrayList<>();
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "SELECT * FROM AGENCIAS WHERE PAIS = ?");
-                ps.setString(1, pais);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    lista.add(new Agencia(rs.getString("ID_AGENCIA"),
-                            rs.getString("NOMBRE"), rs.getString("PAIS"),
-                            rs.getInt("FECHA_FUND")));
-                }
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-            return lista;
-        }
-
-        @Override
-        public ArrayList<Agencia> findByFechaFundacion(int year) {
-            motorSQL.connect();
-            ArrayList<Agencia> lista = new ArrayList<>();
-            try {
-                PreparedStatement ps = motorSQL.getConnection().prepareStatement(
-                        "SELECT * FROM AGENCIAS WHERE FECHA_FUND = ?");
-                ps.setInt(1, year);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    lista.add(new Agencia(rs.getString("ID_AGENCIA"),
-                            rs.getString("NOMBRE"), rs.getString("PAIS"),
-                            rs.getInt("FECHA_FUND")));
-                }
-            } catch (SQLException e) { System.out.println("[ERROR] " + e.getMessage()); }
-            finally { motorSQL.close(); }
-            return lista;
+    // ===================== ADD =====================
+    @Override
+    public void add(InformeForense i) {
+        motorSQL.connect();
+        // ADAPTAR: nombre de tabla y columnas
+        String sql = "INSERT INTO INFORMES_FORENSES (ADN_POSITIVO, NIVEL_RIESGO, CONCLUSION, SANCHEZJOEL)"
+                + " VALUES (?,?,?,?,?)";
+        motorSQL.prepare(sql);
+        try {
+            motorSQL.getPs().setString(1, i.getADNPositivo());
+            motorSQL.getPs().setInt(2, i.getNivelRiesgo());
+            motorSQL.getPs().setString(3, i.getConclusion());
+            motorSQL.getPs().setString(4, i.getSanchezjoel());
+            motorSQL.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
         }
     }
 
+    @Override
+    public InformeForense find(String id) {
+        return null;
+    }
+
+    // ===================== FIND ALL =====================
+    @Override
+    public ArrayList<InformeForense> findAll() {
+        motorSQL.connect();
+        ArrayList<InformeForense> lista = new ArrayList<>();
+        motorSQL.prepare("SELECT * FROM INFORMES_FORENSES");
+        try {
+            ResultSet rs = motorSQL.executeQuery();
+            while (rs.next()) {
+                InformeForense i = new InformeForense();
+                i.setIdInforme(rs.getString("ID"));
+                i.setADNPositivo(rs.getString("ADN_POSITIVO"));
+                i.setNivelRiesgo(rs.getInt("NIVEL_RIESGO"));
+                i.setConclusion(rs.getString("CONCLUSION"));
+                i.setSanchezjoel(rs.getString("SANCHEZJOEL"));
+                lista.add(i);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
+        }
+        return lista;
+    }
+
+    // ===================== FIND BY ID =====================
+    @Override
+    public InformeForense find(int id) {
+        motorSQL.connect();
+        InformeForense i = null;
+        motorSQL.prepare("SELECT * FROM INFORMES_FORENSES WHERE ID = ?");
+        try {
+            motorSQL.getPs().setInt(1, id);
+            ResultSet rs = motorSQL.executeQuery();
+            if (rs.next()) {
+                i = new InformeForense();
+                i.setIdInforme(rs.getString("ID"));
+                i.setADNPositivo(rs.getString("ADN_POSITIVO"));
+                i.setNivelRiesgo(rs.getInt("NIVEL_RIESGO"));
+                i.setConclusion(rs.getString("CONCLUSION"));
+                i.setSanchezjoel(rs.getString("SANCHEZJOEL"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
+        }
+        return i;
+    }
+
+    // ===================== UPDATE =====================
+    @Override
+    public void update(String id, InformeForense i) {
+        motorSQL.connect();
+        String sql = "UPDATE INFORMES_FORENSES SET ADN_POSITIVO=?, NIVEL_RIESGO=?,"
+                + " CONCLUSION=?, SANCHEZJOEL=? WHERE ID=?";
+        motorSQL.prepare(sql);
+        try {
+            motorSQL.getPs().setString(1, i.getADNPositivo());
+            motorSQL.getPs().setInt(2, i.getNivelRiesgo());
+            motorSQL.getPs().setString(3, i.getConclusion());
+            motorSQL.getPs().setString(4, i.getSanchezjoel());
+            motorSQL.getPs().setString(5, id);
+            motorSQL.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
+        }
+    }
+
+    // ===================== DELETE =====================
+    @Override
+    public void delete(String id) {
+        motorSQL.connect();
+        motorSQL.prepare("DELETE FROM INFORMES_FORENSES WHERE ID = ?");
+        try {
+            motorSQL.getPs().setString(1, id);
+            motorSQL.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            motorSQL.close();
+        }
+    }
 }
